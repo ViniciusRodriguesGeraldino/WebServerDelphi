@@ -1,0 +1,19 @@
+object ServerMethods1: TServerMethods1
+  OldCreateOrder = False
+  Height = 165
+  Width = 287
+  object FDConnection1: TFDConnection
+    Params.Strings = (
+      'Database=V:\SibraxFontes\WebServer\Win32\Debug\db'
+      'DriverID=SQLite')
+    LoginPrompt = False
+    BeforeConnect = FDConnection1BeforeConnect
+    Left = 208
+    Top = 24
+  end
+  object tblEmp: TFDTable
+    Connection = FDConnection1
+    Left = 200
+    Top = 88
+  end
+end

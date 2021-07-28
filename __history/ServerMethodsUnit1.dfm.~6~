@@ -1,0 +1,103 @@
+object ServerMethods1: TServerMethods1
+  OldCreateOrder = False
+  Height = 165
+  Width = 287
+  object FDConnection1: TFDConnection
+    Params.Strings = (
+      'Database=V:\SibraxFontes\WebServer\Win32\Debug\db'
+      'DriverID=SQLite')
+    Connected = True
+    LoginPrompt = False
+    BeforeConnect = FDConnection1BeforeConnect
+    Left = 208
+    Top = 24
+  end
+  object tblEmp: TFDTable
+    IndexFieldNames = 'EMPRESA'
+    Connection = FDConnection1
+    UpdateOptions.UpdateTableName = 'EMPRESA'
+    TableName = 'EMPRESA'
+    Left = 200
+    Top = 88
+    object tblEmpEMPRESA: TIntegerField
+      FieldName = 'EMPRESA'
+      Origin = 'EMPRESA'
+      ProviderFlags = [pfInUpdate, pfInWhere, pfInKey]
+      Required = True
+    end
+    object tblEmpNOME: TStringField
+      FieldName = 'NOME'
+      Origin = 'NOME'
+      Required = True
+      Size = 255
+    end
+    object tblEmpENDERECO: TStringField
+      FieldName = 'ENDERECO'
+      Origin = 'ENDERECO'
+      Required = True
+      Size = 255
+    end
+    object tblEmpNUMERO: TStringField
+      FieldName = 'NUMERO'
+      Origin = 'NUMERO'
+      Required = True
+      Size = 10
+    end
+    object tblEmpBAIRRO: TStringField
+      FieldName = 'BAIRRO'
+      Origin = 'BAIRRO'
+      Required = True
+      Size = 255
+    end
+    object tblEmpCIDADE: TStringField
+      FieldName = 'CIDADE'
+      Origin = 'CIDADE'
+      Required = True
+      Size = 255
+    end
+    object tblEmpUF: TStringField
+      FieldName = 'UF'
+      Origin = 'UF'
+      Required = True
+      Size = 2
+    end
+    object tblEmpCOMPLEMENTO: TStringField
+      FieldName = 'COMPLEMENTO'
+      Origin = 'COMPLEMENTO'
+      Required = True
+      Size = 255
+    end
+    object tblEmpCNPJ: TStringField
+      FieldName = 'CNPJ'
+      Origin = 'CNPJ'
+      Required = True
+    end
+    object tblEmpCEP: TStringField
+      FieldName = 'CEP'
+      Origin = 'CEP'
+      Required = True
+    end
+    object tblEmpFONE: TStringField
+      FieldName = 'FONE'
+      Origin = 'FONE'
+      Required = True
+    end
+    object tblEmpCELULAR: TStringField
+      FieldName = 'CELULAR'
+      Origin = 'CELULAR'
+      Required = True
+    end
+    object tblEmpEMAIL: TStringField
+      FieldName = 'EMAIL'
+      Origin = 'EMAIL'
+      Required = True
+      Size = 255
+    end
+    object tblEmpPIX: TStringField
+      FieldName = 'PIX'
+      Origin = 'PIX'
+      Required = True
+      Size = 255
+    end
+  end
+end
