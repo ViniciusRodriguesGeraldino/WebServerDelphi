@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2021/06/22 14:34:15.000.780,=C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\Unit3.pas</Transaction>
+    <Transaction>2021/07/27 11:05:19.000.222,=C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerMethodsUnit1.pas</Transaction>
+    <Transaction>2021/07/27 11:05:21.000.389,=C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerContainerUnit1.pas</Transaction>
+    <Transaction>2021/07/27 11:05:21.000.257,=C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerConst1.pas</Transaction>
+    <Transaction>2021/07/27 11:06:31.000.501,C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerContainerUnit1.pas=V:\SibraxFontes\WebServer\ServerContainerUnit1.pas</Transaction>
+    <Transaction>2021/07/27 11:06:31.000.501,C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerContainerUnit1.dfm=V:\SibraxFontes\WebServer\ServerContainerUnit1.dfm</Transaction>
+    <Transaction>2021/07/27 11:06:34.000.032,C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerConst1.pas=V:\SibraxFontes\WebServer\ServerConst1.pas</Transaction>
+    <Transaction>2021/07/27 11:06:35.000.096,C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerMethodsUnit1.dfm=V:\SibraxFontes\WebServer\ServerMethodsUnit1.dfm</Transaction>
+    <Transaction>2021/07/27 11:06:35.000.096,C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\ServerMethodsUnit1.pas=V:\SibraxFontes\WebServer\ServerMethodsUnit1.pas</Transaction>
+    <Transaction>2021/07/27 11:06:36.000.287,C:\Users\desenvolvimento\Documents\Embarcadero\Studio\Projects\Project2.dproj=V:\SibraxFontes\WebServer\Project2.dproj</Transaction>
+    <Transaction>2021/07/29 11:50:49.000.011,D:\Fontes\WebServer\WebServer.dproj=D:\Fontes\WebServer\Project2.dproj</Transaction>
+    <Transaction>2021/07/30 19:32:41.876,D:\Fontes\WebServer\WebServer2.dproj=D:\Fontes\WebServer\WebServer.dproj</Transaction>
+  </Transactions>
+</BorlandProject>

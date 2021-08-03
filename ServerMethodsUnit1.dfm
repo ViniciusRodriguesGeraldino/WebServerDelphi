@@ -4,8 +4,10 @@ object ServerMethods1: TServerMethods1
   Width = 287
   object FDConnection1: TFDConnection
     Params.Strings = (
-      'Database=V:\SibraxFontes\WebServer\Win32\Debug\db'
-      'DriverID=SQLite')
+      'Database=app'
+      'User_Name=root'
+      'Password=1234'
+      'DriverID=MySQL')
     LoginPrompt = False
     BeforeConnect = FDConnection1BeforeConnect
     Left = 40
@@ -32,57 +34,69 @@ object ServerMethods1: TServerMethods1
       Size = 255
     end
     object tblEmpENDERECO: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'ENDERECO'
       Origin = 'ENDERECO'
       Size = 255
     end
     object tblEmpNUMERO: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'NUMERO'
       Origin = 'NUMERO'
       Size = 10
     end
     object tblEmpBAIRRO: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'BAIRRO'
       Origin = 'BAIRRO'
       Size = 255
     end
     object tblEmpCIDADE: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'CIDADE'
       Origin = 'CIDADE'
       Size = 255
     end
     object tblEmpUF: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'UF'
       Origin = 'UF'
       Size = 2
     end
     object tblEmpCOMPLEMENTO: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'COMPLEMENTO'
       Origin = 'COMPLEMENTO'
       Size = 255
     end
     object tblEmpCNPJ: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'CNPJ'
       Origin = 'CNPJ'
     end
     object tblEmpCEP: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'CEP'
       Origin = 'CEP'
     end
     object tblEmpFONE: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'FONE'
       Origin = 'FONE'
     end
     object tblEmpCELULAR: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'CELULAR'
       Origin = 'CELULAR'
     end
     object tblEmpEMAIL: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'EMAIL'
       Origin = 'EMAIL'
       Size = 255
     end
     object tblEmpPIX: TStringField
+      AutoGenerateValue = arDefault
       FieldName = 'PIX'
       Origin = 'PIX'
       Size = 255
@@ -171,5 +185,9 @@ object ServerMethods1: TServerMethods1
       Origin = 'PLACA_CARRO'
       Size = 255
     end
+  end
+  object fdphysmysqldrvrlnk1: TFDPhysMySQLDriverLink
+    Left = 216
+    Top = 65528
   end
 end

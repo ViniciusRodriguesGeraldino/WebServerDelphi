@@ -9,7 +9,8 @@ uses System.SysUtils, System.Classes, System.Json,
   FireDAC.Stan.Pool, FireDAC.Stan.Async, FireDAC.Phys, FireDAC.Phys.SQLite,
   FireDAC.Phys.SQLiteDef, FireDAC.Stan.ExprFuncs, FireDAC.ConsoleUI.Wait,
   Data.DB, FireDAC.Comp.Client, FireDAC.DApt, FireDAC.Stan.Param, FireDAC.DatS,
-  FireDAC.DApt.Intf, FireDAC.Comp.DataSet, Rest.Json;
+  FireDAC.DApt.Intf, FireDAC.Comp.DataSet, Rest.Json, FireDAC.Phys.MySQL,
+  FireDAC.Phys.MySQLDef;
 
 type
   TServerMethods1 = class(TDSServerModule)
@@ -31,6 +32,7 @@ type
     tblClientesFONE: TStringField;
     tblClientesVEICULO_MODELO: TStringField;
     tblClientesPLACA_CARRO: TStringField;
+    fdphysmysqldrvrlnk1: TFDPhysMySQLDriverLink;
     tblEmpEMPRESA: TIntegerField;
     tblEmpNOME: TStringField;
     tblEmpENDERECO: TStringField;
@@ -88,7 +90,7 @@ procedure TServerMethods1.AtualizaTabelas;
 begin
 
   criaTabelaOuAltera('CREATE', 'EMPRESA', '', 'CREATE TABLE EMPRESA ( ' +
-                                        '    EMPRESA     INTEGER NOT NULL, ' +
+                                        '    EMPRESA     INT(11) NOT NULL AUTO_INCREMENT, ' +
                                         '    NOME        VARCHAR(255) NOT NULL, ' +
                                         '    ENDERECO    VARCHAR(255), ' +
                                         '    NUMERO      VARCHAR(10), ' +
@@ -107,26 +109,26 @@ begin
                     );
 
   criaTabelaOuAltera('CREATE', 'SERVICOS', '', 'CREATE TABLE SERVICOS ( ' +
-                                                 ' EMPRESA        INTEGER, ' +
-                                                 ' ID             INTEGER, ' +
+                                                 ' EMPRESA        INT(11), ' +
+                                                 ' ID             INT(11) NOT NULL AUTO_INCREMENT, ' +
                                                  ' CLIENTE_ID     INTEGER, ' +
                                                  ' VALOR          DECIMAL(10,5), ' +
-                                                 ' NOME SERVICO   VARCHAR(255), ' +
-                                                 ' INICIO_SERVICO TIMESTAMP, ' +
-                                                 ' FIM_SERVICO    TIMESTAMP, ' +
-                                                 ' PRIMARY KEY (EMPRESA, ID) ' +
+                                                 ' NOME_SERVICO   VARCHAR(255), ' +
+                                                 ' INICIO_SERVICO TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+                                                 ' FIM_SERVICO    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+                                                 ' PRIMARY KEY (ID) ' +
                                                  '); '
                     );
 
   criaTabelaOuAltera('CREATE', 'CLIENTES', '', 'CREATE TABLE CLIENTES ( ' +
-                                                 ' EMPRESA        INTEGER, ' +
-                                                 ' ID             INTEGER, ' +
+                                                 ' EMPRESA        INT(11), ' +
+                                                 ' ID             INT(11) NOT NULL AUTO_INCREMENT, ' +
                                                  ' NOME           VARCHAR(255), ' +
                                                  ' CNPJ           VARCHAR(20), ' +
                                                  ' FONE           VARCHAR(20), ' +
                                                  ' VEICULO_MODELO VARCHAR(255), ' +
                                                  ' PLACA_CARRO    VARCHAR(255), ' +
-                                                 ' PRIMARY KEY (EMPRESA, ID) ' +
+                                                 ' PRIMARY KEY (ID) ' +
                                                  '); '
                     );
 
@@ -194,6 +196,7 @@ begin
     jsonObject.AddPair(TJSONPair.Create('numero', tblEmpNUMERO.AsString));
     jsonObject.AddPair(TJSONPair.Create('bairro', tblEmpBAIRRO.AsString));
     jsonObject.AddPair(TJSONPair.Create('cidade', tblEmpCIDADE.AsString));
+    jsonObject.AddPair(TJSONPair.Create('uf', tblEmpUF.AsString));
     jsonObject.AddPair(TJSONPair.Create('complemento', tblEmpCOMPLEMENTO.AsString));
     jsonObject.AddPair(TJSONPair.Create('cep', tblEmpCEP.AsString));
     jsonObject.AddPair(TJSONPair.Create('fone', tblEmpFONE.AsString));
@@ -247,8 +250,10 @@ end;
 
 procedure TServerMethods1.FDConnection1BeforeConnect(Sender: TObject);
 begin
-  FDConnection1.Params.Values['database'] := 'db';
-  FDConnection1.ConnectionName := 'SQLLite';
+
+  FDConnection1.Params.Values['database'] := 'app';
+  FDConnection1.ConnectionName := 'MySQL';
+
 end;
 
 function TServerMethods1.getNewIDEmpresa: Integer;
@@ -370,7 +375,7 @@ begin
     cnpj := objCliente.Values['cnpj'].Value;
     cnpj := LimpaStringNumerica(cnpj);
     tblClientesEMPRESA.AsInteger := getEmpresaByCnpj(cnpj);
-    tblClientesID.AsInteger := getNewIDCliente(tblClientesEMPRESA.AsInteger);
+    //tblClientesID.AsInteger := getNewIDCliente(tblClientesEMPRESA.AsInteger);
 
     if objCliente.Values['nome'] <> nil  then
       tblClientesNOME.AsString := objCliente.Values['nome'].Value;
@@ -403,7 +408,7 @@ begin
 	"cnpj": "24.240.871/0001-40",
 	"nome": "MERCADO ENVIOS SERVICOS DE LOGISTICA LTDA",
 	"endereco": "RUA MATO GROSSO",
-        "numero": "1873",
+  "numero": "1873",
 	"bairro": "CENTRO",
 	"cidade": "LONDRINA",
 	"uf": "PR",
@@ -426,7 +431,7 @@ begin
     else
     begin
       tblEmp.Insert;
-      tblEmpEMPRESA.AsInteger := getNewIDEmpresa;
+      //tblEmpEMPRESA.AsInteger := getNewIDEmpresa;
     end;
 
     if objEmpresa.Values['cnpj'] <> nil  then
@@ -491,14 +496,14 @@ begin
       else
       begin
         tblServicos.Insert;
-        tblServicosID.AsInteger := getNewIDServico;
+        //tblServicosID.AsInteger := getNewIDServico;
       end;
 
     end
     else
     begin
       tblServicos.Insert;
-      tblServicosID.AsInteger := getNewIDServico;
+      //tblServicosID.AsInteger := getNewIDServico;
     end;
 
     tblServicosEMPRESA.AsInteger := getEmpresaByCnpj(cnpj);
