@@ -130,11 +130,6 @@ object ServerMethods1: TServerMethods1
       Precision = 10
       Size = 5
     end
-    object tblServicosNOME: TWideStringField
-      FieldName = 'NOME'
-      Origin = 'NOME'
-      Size = 255
-    end
     object tblServicosINICIO_SERVICO: TSQLTimeStampField
       FieldName = 'INICIO_SERVICO'
       Origin = 'INICIO_SERVICO'
@@ -142,6 +137,10 @@ object ServerMethods1: TServerMethods1
     object tblServicosFIM_SERVICO: TSQLTimeStampField
       FieldName = 'FIM_SERVICO'
       Origin = 'FIM_SERVICO'
+    end
+    object tblServicosNOME_SERVICO: TStringField
+      FieldName = 'NOME_SERVICO'
+      Size = 255
     end
   end
   object tblClientes: TFDTable

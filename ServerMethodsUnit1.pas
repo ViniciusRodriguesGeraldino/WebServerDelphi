@@ -21,7 +21,6 @@ type
     tblServicosID: TIntegerField;
     tblServicosCLIENTE_ID: TIntegerField;
     tblServicosVALOR: TFMTBCDField;
-    tblServicosNOME: TWideStringField;
     tblServicosINICIO_SERVICO: TSQLTimeStampField;
     tblServicosFIM_SERVICO: TSQLTimeStampField;
     tblClientes: TFDTable;
@@ -47,6 +46,7 @@ type
     tblEmpCELULAR: TStringField;
     tblEmpEMAIL: TStringField;
     tblEmpPIX: TStringField;
+    tblServicosNOME_SERVICO: TStringField;
     procedure FDConnection1BeforeConnect(Sender: TObject);
   private
     { Private declarations }
@@ -140,7 +140,7 @@ var
   jsonObject : TJSONObject;
 begin
 
-  tblEmp.Open;
+  tblClientes.Open;
 
   cpf := LimpaStringNumerica(cpf);
 
@@ -260,13 +260,16 @@ function TServerMethods1.getNewIDEmpresa: Integer;
 var
   sqlQuery : TFDQuery;
 begin
+  sqlQuery := TFDQuery.Create(nil);
 
   sqlQuery.Close;
   sqlQuery.Connection := FDConnection1;
   sqlQuery.SQL.Text := 'SELECT MAX(EMPRESA) FROM EMPRESA';
   sqlQuery.Open;
 
-  Result := sqlQuery.FieldByName('MAX').AsInteger + 1;
+  Result := sqlQuery.Fields[0].AsInteger + 1;
+  if Result = 0 then
+    Result := 1;
 
   sqlQuery.DisposeOf;
 end;
@@ -291,6 +294,8 @@ var
   sqlQuery : TFDQuery;
 begin
   cpf := LimpaStringNumerica(cpf);
+
+  sqlQuery := TFDQuery.Create(nil);
 
   sqlQuery.Close;
   sqlQuery.Connection := FDConnection1;
@@ -323,6 +328,8 @@ var
 begin
   cnpj := LimpaStringNumerica(cnpj);
 
+  sqlQuery := TFDQuery.Create(nil);
+
   sqlQuery.Close;
   sqlQuery.Connection := FDConnection1;
   sqlQuery.SQL.Text := 'SELECT EMPRESA FROM EMPRESA WHERE CNPJ = ' + QuotedStr(cnpj);
@@ -337,13 +344,16 @@ function TServerMethods1.getNewIDCliente(idEmp : Integer) : Integer;
 var
   sqlQuery : TFDQuery;
 begin
+  sqlQuery := TFDQuery.Create(nil);
 
   sqlQuery.Close;
   sqlQuery.Connection := FDConnection1;
   sqlQuery.SQL.Text := 'SELECT MAX(ID) FROM CLIENTES WHERE EMPRESA = ' + IntToStr(idEmp);
   sqlQuery.Open;
 
-  Result := sqlQuery.FieldByName('MAX').AsInteger + 1;
+  Result := sqlQuery.Fields[0].AsInteger + 1;
+  if Result = 0 then
+    Result := 1;
 
   sqlQuery.DisposeOf;
 end;
@@ -367,15 +377,15 @@ begin
     cpf := objCliente.Values['cpf'].Value;
     cpf := LimpaStringNumerica(cpf);
 
-    if tblEmp.Locate('cpf', cpf, []) then
-      tblEmp.Edit
+    if tblClientes.Locate('cnpj', cpf, []) then   //ta cnpj mas vale cpf tbm
+      tblClientes.Edit
     else
-      tblEmp.Insert;
+      tblClientes.Insert;
 
     cnpj := objCliente.Values['cnpj'].Value;
     cnpj := LimpaStringNumerica(cnpj);
     tblClientesEMPRESA.AsInteger := getEmpresaByCnpj(cnpj);
-    //tblClientesID.AsInteger := getNewIDCliente(tblClientesEMPRESA.AsInteger);
+    tblClientesID.AsInteger := getNewIDCliente(tblClientesEMPRESA.AsInteger);
 
     if objCliente.Values['nome'] <> nil  then
       tblClientesNOME.AsString := objCliente.Values['nome'].Value;
@@ -431,7 +441,7 @@ begin
     else
     begin
       tblEmp.Insert;
-      //tblEmpEMPRESA.AsInteger := getNewIDEmpresa;
+      tblEmpEMPRESA.AsInteger := getNewIDEmpresa;
     end;
 
     if objEmpresa.Values['cnpj'] <> nil  then
@@ -512,7 +522,7 @@ begin
     if objServico.Values['valor'] <> nil  then
       tblServicosVALOR.AsString := objServico.Values['valor'].Value;
     if objServico.Values['nome'] <> nil  then
-      tblServicosNOME.AsString := objServico.Values['nome'].Value;
+      tblServicosNOME_SERVICO.AsString := objServico.Values['nome'].Value;
     if objServico.Values['data_inicio'] <> nil  then
       tblServicosINICIO_SERVICO.AsString := objServico.Values['data_inicio'].Value;
     if objServico.Values['data_fim'] <> nil  then
@@ -537,7 +547,7 @@ begin
 
   tblServicos.Open;
 
-  if tblClientes.Locate('ID', id, []) then
+  if tblServicos.Locate('ID', id, []) then
   begin
     jsonObject := TJSONObject.Create;
     jsonObject.AddPair(TJSONPair.Create('empresa', tblServicosEMPRESA.AsString));
