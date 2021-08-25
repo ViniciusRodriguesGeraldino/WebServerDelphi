@@ -21,8 +21,6 @@ type
     tblServicosID: TIntegerField;
     tblServicosCLIENTE_ID: TIntegerField;
     tblServicosVALOR: TFMTBCDField;
-    tblServicosINICIO_SERVICO: TSQLTimeStampField;
-    tblServicosFIM_SERVICO: TSQLTimeStampField;
     tblClientes: TFDTable;
     tblClientesEMPRESA: TIntegerField;
     tblClientesID: TIntegerField;
@@ -47,6 +45,8 @@ type
     tblEmpEMAIL: TStringField;
     tblEmpPIX: TStringField;
     tblServicosNOME_SERVICO: TStringField;
+    tblServicosINICIO_SERVICO: TDateTimeField;
+    tblServicosFIM_SERVICO: TDateTimeField;
     procedure FDConnection1BeforeConnect(Sender: TObject);
   private
     { Private declarations }
@@ -69,6 +69,7 @@ type
 
     //Serviços
     function Servico(id : string): TJSONObject;  //GET
+    function Servicos(cnpj : string): TJSONArray;  //GET
     function updateServico(objServico : TJSONObject): string; //POST
     function getNewIDServico : Integer;
 
@@ -114,8 +115,8 @@ begin
                                                  ' CLIENTE_ID     INTEGER, ' +
                                                  ' VALOR          DECIMAL(10,5), ' +
                                                  ' NOME_SERVICO   VARCHAR(255), ' +
-                                                 ' INICIO_SERVICO TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
-                                                 ' FIM_SERVICO    TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ' +
+                                                 ' INICIO_SERVICO DATETIME, ' +
+                                                 ' FIM_SERVICO    DATETIME, ' +
                                                  ' PRIMARY KEY (ID) ' +
                                                  '); '
                     );
@@ -243,7 +244,7 @@ begin                                                 {nomeTabela = Ex: BANCO}
     end;
 
   finally
-    sqlQuery.Free;
+    sqlQuery.DisposeOf;
   end;
 
 end;
@@ -278,13 +279,16 @@ function TServerMethods1.getNewIDServico: Integer;
 var
   sqlQuery : TFDQuery;
 begin
+  sqlQuery := TFDQuery.Create(nil);
 
   sqlQuery.Close;
   sqlQuery.Connection := FDConnection1;
   sqlQuery.SQL.Text := 'SELECT MAX(ID) FROM SERVICOS';
   sqlQuery.Open;
 
-  Result := sqlQuery.FieldByName('MAX').AsInteger + 1;
+  Result := sqlQuery.Fields[0].AsInteger + 1;
+  if Result = 0 then
+    Result := 1;
 
   sqlQuery.DisposeOf;
 end;
@@ -311,6 +315,7 @@ function TServerMethods1.getClienteCpfByID(id: integer): string;
 var
   sqlQuery : TFDQuery;
 begin
+  sqlQuery := TFDQuery.Create(nil);
 
   sqlQuery.Close;
   sqlQuery.Connection := FDConnection1;
@@ -405,8 +410,8 @@ begin
     Result := 'Erro: ' + E.Message;
   end;
 
-
-  Result := 'Sucesso';
+  if Result = '' then
+    Result := 'Sucesso';
 
 end;
 
@@ -478,14 +483,14 @@ begin
     Result := 'Erro: ' + E.Message;
   end;
 
-
-  Result := 'Sucesso';
+  if Result = '' then
+    Result := 'Sucesso';
 
 end;
 
 function TServerMethods1.updateServico(objServico: TJSONObject): string;
 var
-  id, cpf, cnpj : string;
+  id, cpf, cnpj, dtI, dtF : string;
 begin
 
   try
@@ -506,14 +511,14 @@ begin
       else
       begin
         tblServicos.Insert;
-        //tblServicosID.AsInteger := getNewIDServico;
+        tblServicosID.AsInteger := getNewIDServico;
       end;
 
     end
     else
     begin
       tblServicos.Insert;
-      //tblServicosID.AsInteger := getNewIDServico;
+      tblServicosID.AsInteger := getNewIDServico;
     end;
 
     tblServicosEMPRESA.AsInteger := getEmpresaByCnpj(cnpj);
@@ -524,9 +529,14 @@ begin
     if objServico.Values['nome'] <> nil  then
       tblServicosNOME_SERVICO.AsString := objServico.Values['nome'].Value;
     if objServico.Values['data_inicio'] <> nil  then
-      tblServicosINICIO_SERVICO.AsString := objServico.Values['data_inicio'].Value;
+    begin
+      tblServicosINICIO_SERVICO.AsDateTime := StrToDateTime(objServico.Values['data_inicio'].Value);
+    end;
+
     if objServico.Values['data_fim'] <> nil  then
-      tblServicosFIM_SERVICO.AsString := objServico.Values['data_fim'].Value;
+    begin
+      tblServicosFIM_SERVICO.AsDateTime := StrToDateTime(objServico.Values['data_fim'].Value);
+    end;
 
     tblServicos.Post;
     tblServicos.ApplyUpdates(0);
@@ -535,8 +545,8 @@ begin
     Result := 'Erro: ' + E.Message;
   end;
 
-
-  Result := 'Sucesso-'+tblServicosID.AsString;
+  if Result = '' then
+    Result := 'Sucesso-'+tblServicosID.AsString;
 
 end;
 
@@ -544,7 +554,6 @@ function TServerMethods1.Servico(id: string): TJSONObject;
 var
   jsonObject : TJSONObject;
 begin
-
   tblServicos.Open;
 
   if tblServicos.Locate('ID', id, []) then
@@ -552,6 +561,7 @@ begin
     jsonObject := TJSONObject.Create;
     jsonObject.AddPair(TJSONPair.Create('empresa', tblServicosEMPRESA.AsString));
     jsonObject.AddPair(TJSONPair.Create('id', tblServicosID.AsString));
+    jsonObject.AddPair(TJSONPair.Create('nome_servico', tblServicosNOME_SERVICO.AsString));
     jsonObject.AddPair(TJSONPair.Create('cpf',  getClienteCpfByID(tblServicosCLIENTE_ID.AsInteger)));
     jsonObject.AddPair(TJSONPair.Create('valor', tblServicosVALOR.AsString));
     jsonObject.AddPair(TJSONPair.Create('data_inicio', tblServicosINICIO_SERVICO.AsString));
@@ -563,6 +573,55 @@ begin
     Result := nil;
 
 end;
+function TServerMethods1.Servicos(cnpj: string): TJSONArray;
+var
+  jsonObject : TJSONObject;
+  jsonArray : TJSONArray;
+  query : TFDQuery;
+  idEmpresa : Integer;
+begin
+  idEmpresa := getEmpresaByCnpj(cnpj);
+
+  query := TFDQuery.Create(nil);
+  jsonArray := TJSONArray.Create;
+
+  try
+
+    query.Close;
+    query.Connection := FDConnection1;
+    query.SQL.Text := 'SELECT * FROM SERVICOS WHERE EMPRESA = ' + IntToStr(idEmpresa) + ' ORDER BY INICIO_SERVICO DESC LIMIT 100';
+    query.Open;
+
+    while not query.Eof do
+    begin
+
+      jsonObject := TJSONObject.Create;
+
+      tblClientes.Open;
+      tblClientes.Locate('ID', query.FieldByName('CLIENTE_ID').AsString, []);
+
+      jsonObject.AddPair(TJSONPair.Create('id_servico', query.FieldByName('ID').AsString));
+      jsonObject.AddPair(TJSONPair.Create('nome_cliente', tblClientesNOME.AsString));
+      jsonObject.AddPair(TJSONPair.Create('carro', tblClientesVEICULO_MODELO.AsString));
+      jsonObject.AddPair(TJSONPair.Create('cpf_cliente', tblClientesCNPJ.AsString));
+      jsonObject.AddPair(TJSONPair.Create('placa', tblClientesPLACA_CARRO.AsString));
+      jsonObject.AddPair(TJSONPair.Create('valor', query.FieldByName('VALOR').AsString));
+      jsonObject.AddPair(TJSONPair.Create('data_inicio', query.FieldByName('INICIO_SERVICO').AsString));
+      jsonObject.AddPair(TJSONPair.Create('data_fim', query.FieldByName('FIM_SERVICO').AsString));
+
+      jsonArray.Add(jsonObject);
+
+      query.Next;
+    end;
+
+  finally
+    query.DisposeOf;
+  end;
+
+  Result := jsonArray;
+
+end;
+
 function TServerMethods1.LimpaStringNumerica(cStr: string): string;
 var nC, i : integer;
     cString, cStringValida : string;
